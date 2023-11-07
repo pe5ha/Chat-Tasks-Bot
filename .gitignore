@@ -1,0 +1,11 @@
+# File with secret token 
+.clasp.json
+
+# Local Packages
+node_modules/
+
+# ignore all . files and . folders
+.*
+
+# Dont ignore .gitignore (this file in the / root folder)
+!/.gitignore
