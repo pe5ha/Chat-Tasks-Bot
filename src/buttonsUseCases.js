@@ -25,6 +25,35 @@ function buttonsUseCases(data){
 
 
   }
+  else if(String(data).startsWith("settings ")){
+    let nomer = data.split(" ")[1];
+    let task_id = data.split(" ")[2];
+    let tasks = tChat.use(chat_id).getRange(tChat.allRange).getValues();
+    let row = findRowIn2dRangeString(tasks, tChat.getCol(tChat.id_Title), task_id);
+    // if(status != "готово"){
+    let mes = "<b>Задача</b>\n"+tasks[row][tChat.getCol(tChat.name_Title)];
+    let options = JSON.parse(tasks[row][tChat.getCol(tChat.options_Title)]);
+    mes += "\n\n<b>Настройки уведомлений</b>\nДата начала: " + options.fromDate;
+    mes += "\nВремя: " + options.time;
+    mes += "\nТип: " + types[options.type];
+    if(options.repeatDays) mes += "\nДни: " + options.repeatDays;
+    let settingsKeyboard = {
+      inline_keyboard: [
+        [{text: "Редактировать", callback_data: "edit"},
+        {text: "Архивировать", callback_data: "archive"}],
+      ]
+    };
+    botSendMessage(chat_id,mes,settingsKeyboard);
+    
+
+    // }
+    // else{
+    //   // tChat.use(chat_id+"_done").getRange(row+1,tChat.getCol(tChat.status_Title)+1,1,2).setValues([["", ""]]);
+    //   botEditMessage(chat_id,message_id,text.replace("\n"+nomer+". (✅) ","\n"+nomer+". "),reply_markup);
+    // }
+
+
+  }
   // else if(String(data).startsWith("undone ")){
   //   let nomer = data.split(" ")[1];
   //   let task_id = data.split(" ")[2];

@@ -27,6 +27,15 @@ function stringDateDash(date,beOnlyDate=false, gmt="GMT+3"){
   }
 }
 
+/**
+ * date in format: dd.mm.yyyy
+ * @param {String} dateString
+ */
+function getDateFromString(dateString){
+  let parts = dateString.split(".");
+  return new Date(parts[2],parts[1]-1,parts[0]);
+}
+
 function getMonthNameByDate(date){
   return monthNames[date.getMonth()];
 }
@@ -64,16 +73,45 @@ function isValidHttpUrl(string) {
 
 function findRowIn2dRange(array,columnIndex,value){
   for (let i = 0; i < array.length; i++) { 
-    if (array[i][column] == value) {
+    if (array[i][columnIndex] == value) {
       return i;
     }
   }
   return -1;
 }
 
-function findRowIn2dRangeString(array,column,value){
+function findRowIn2dRangeString(array,columnIndex,value){
   for (let i = 0; i < array.length; i++) { 
-    if (String(array[i][column]) == String(value)) {
+    if (String(array[i][columnIndex]) == String(value)) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+/**
+ * 
+ * @param {*} array 
+ * @param {*} columnIndex 
+ * @param {Date} date 
+ * @returns 
+ */
+function findRowIn2dRangeDate(array,columnIndex,date){
+  for (let i = 0; i < array.length; i++) { 
+    const element = array[i];
+    try {
+      if(element[columnIndex].getTime() === date.getTime()){
+        return i;
+      }
+    } catch (error) {}
+  }
+  return -1;
+}
+
+
+function findIndexInObjArau(array,field,value){
+  for (let i = 0; i < array.length; i++) { 
+    if (array[i][field] == value) {
       return i;
     }
   }

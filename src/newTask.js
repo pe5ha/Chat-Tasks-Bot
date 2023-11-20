@@ -1,18 +1,26 @@
 function newTask(){
-  
+  let task_id = message_id;
   let task = String(text).replace("/+","").split("\n",2)[0].trim();
   let optionsRaw = "";
   if(text.indexOf("\n") != -1) optionsRaw = String(text).substring(text.indexOf("\n")+1);
   let options = parseDateTimeOptions(optionsRaw);
   tChat.use(chat_id).insertRowBefore(2);
-  tChat.use(chat_id).getRange(2,tChat.getCol(tChat.id_Title)+1,1,3).setValues([[message_id, task, JSON.stringify(options, null, 5)]]); 
+  tChat.use(chat_id).getRange(2,tChat.getCol(tChat.id_Title)+1,1,3).setValues([[task_id, task, JSON.stringify(options, null, 5)]]); 
   
-  let taskMes = "Добавлена задача: <b>"+task+"</b>";
-  taskMes += "\nДата начала: " + options.fromDate;
-  taskMes += "\nТип: " + types[options.type];
-  if(options.repeatDays) taskMes += "\nДни: " + options.repeatDays;
+  createTriggerForRemider(chat_id,task_id,options);
 
-  botSendMessage(chat_id,taskMes);
+  let mes = "<b>Задача</b>\n"+task;
+  mes += "\n\n<b>Настройки уведомлений</b>\nДата начала: " + options.fromDate;
+  mes += "\nВремя: " + options.time;
+  mes += "\nТип: " + types[options.type];
+  if(options.repeatDays) mes += "\nДни: " + options.repeatDays;
+  let settingsKeyboard = {
+    inline_keyboard: [
+      [{text: "Редактировать", callback_data: "edit"},
+      {text: "Архивировать", callback_data: "archive"}],
+    ]
+  };
+  botSendMessage(chat_id,mes,settingsKeyboard);
 }
 let types = {
   once: "Разовая",

@@ -48,8 +48,11 @@ function logDebug(e){
     } catch (error) {}
   }
   tDebug.getRange(1, 3).setValue(JSON.stringify(e, null, 5));
-  let contents = JSON.parse(e.postData.contents);
-  tDebug.getRange(1, 1).setValue(JSON.stringify(contents, null, 5));
+  try {
+    let contents = JSON.parse(e.postData.contents);
+    tDebug.getRange(1, 1).setValue(JSON.stringify(contents, null, 5));
+  } catch (error) {
+  }
 }
 
 

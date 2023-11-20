@@ -1,8 +1,37 @@
 function showAllTasks(chatId){
 
-  let taskToRemid = remidInChat(chatId, "all");
+  showOnceTasks(chatId, "once", "Разовые задачи:");
+  showOnceTasks(chatId, "daily", "Ежедневные задачи:");
+  showOnceTasks(chatId, "weekly", "Еженедельные задачи:");
+}
+
+function showOnceTasks(chatId, type, title){
+
+  let taskToRemid = getChatTasks(chatId, type);
     
-  let mes = "Все установленные задачи:\n\n";
+  let mes = title+"\n\n";
+  let keyboard = {
+    inline_keyboard: [[]] }
+  let k = 0;
+
+  for (let i = 0; i < taskToRemid.length; i++) {
+    mes += (i+1) + ". " + taskToRemid[i].title+"\n";
+    keyboard.inline_keyboard[k].push({text: (i+1)+"", callback_data: "settings "+(i+1)+" "+taskToRemid[i].id});
+    if(Math.floor(i/7) > k){
+      k++;
+      keyboard.inline_keyboard.push([]);
+    }
+  }
+
+  botSendMessage(chatId,mes,keyboard);
+
+}
+
+function showDailyTasks(chatId){
+
+  let taskToRemid = remidInChat(chatId, "daily");
+    
+  let mes = "Ежедневные задачи:\n\n";
   let keyboard = {
     inline_keyboard: [[]] }
   let k = 0;
@@ -18,8 +47,32 @@ function showAllTasks(chatId){
 
   botSendMessage(chatId,mes,keyboard);
 
+}
+
+function showWeeklyTasks(chatId){
+
+  let taskToRemid = remidInChat(chatId, "weekly");
+    
+  let mes = "Еженедельные задачи:\n\n";
+  let keyboard = {
+    inline_keyboard: [[]] }
+  let k = 0;
+
+  for (let i = 0; i < taskToRemid.length; i++) {
+    mes += (i+1) + ". " + taskToRemid[i].title+"\n";
+    keyboard.inline_keyboard[k].push({text: (i+1)+"", callback_data: "done "+(i+1)+" "+taskToRemid[i].id});
+    if(Math.floor(i/7) > k){
+      k++;
+      keyboard.inline_keyboard.push([]);
+    }
+  }
+
+  botSendMessage(chatId,mes,keyboard);
 
 }
+
+
+
 
 let daysInd = ["вс","пн","вт","ср","чт","пт","сб"];
 
@@ -108,6 +161,24 @@ function onceTaskRemider(){
 
   }
 }
+
+function getChatTasks(chatId, type){
+  let tasks = tChat.use(chatId).getRange(tChat.allRange).getValues();
+  let taskToRemid = [];
+  for (let i = 0; i < tasks.length; i++) {
+    if(tasks[i][tChat.getCol(tChat.id_Title)] == "") break;
+    let timeOptions;
+    try {
+      timeOptions = JSON.parse(tasks[i][tChat.getCol(tChat.options_Title)]);
+    } catch (e) {
+      continue;
+    }
+    if(type != "all" && timeOptions.type != type) continue;
+    taskToRemid.push({id: tasks[i][tChat.getCol(tChat.id_Title)], title: tasks[i][tChat.getCol(tChat.name_Title)]});
+  }
+  return taskToRemid;
+}
+
 
 
 function remidInChat(chatId, type){
