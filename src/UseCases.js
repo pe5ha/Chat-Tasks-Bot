@@ -15,9 +15,14 @@ function useCases(){
     newTask();
   }
   
-  else if(text == "/tasks"){
+  else if(text == "/tasks" || String(text).startsWith("/tasks@")){
     showAllTasks(chat_id);
   }
+  
+  else if(text == "/help" || String(text).startsWith("/help@")){
+    sendHelp();
+  }
+
 
   if(new_chat_member){
     if(new_chat_member.id == token.split(":")[0]){

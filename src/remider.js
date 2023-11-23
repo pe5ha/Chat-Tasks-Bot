@@ -1,15 +1,51 @@
-function showAllTasks(chatId){
 
-  showOnceTasks(chatId, "once", "Разовые задачи:");
-  showOnceTasks(chatId, "daily", "Ежедневные задачи:");
-  showOnceTasks(chatId, "weekly", "Еженедельные задачи:");
+function showAllTasks(chatId, isUpdate=false){
+
+  let taskToRemid = getChatTasks(chatId, "once");
+  taskToRemid = taskToRemid.concat(getChatTasks(chatId, "weekly"));
+    
+  let mes = "Все задачи чата:";
+  let keyboard = {
+    inline_keyboard: [[]] }
+  let k = 0;
+
+  for (let i = 0; i < taskToRemid.length; i++) {
+    mes += "\n\n"+(i+1) + ". " + taskToRemid[i].title+"\n";
+    if(taskToRemid[i].options.type == "once"){
+      mes += "    [разовая] " + taskToRemid[i].options.fromDate + " " + taskToRemid[i].options.time;
+    }
+    else{
+      mes += "    [" + taskToRemid[i].options.repeatDays + "] " + taskToRemid[i].options.fromDate + " " + taskToRemid[i].options.time;
+    }
+    keyboard.inline_keyboard[k].push({text: (i+1)+"", callback_data: "settings "+(i+1)+" "+taskToRemid[i].id});
+    if(Math.floor(i/7) > k){
+      k++;
+      keyboard.inline_keyboard.push([]);
+    }
+  }
+  keyboard.inline_keyboard.push([{text: "🔄", callback_data: "update"}])
+
+  if(isUpdate){
+    if(mes.trim() == text.trim()) return;
+    botEditMessage(chatId,message_id,mes,keyboard);
+
+  }
+  else{
+    botSendMessage(chatId,mes,keyboard);
+  }
+
 }
 
-function showOnceTasks(chatId, type, title){
+
+const typesTitle = {
+  once: "Разовая.",
+  weekly: "Повторяющаяся."
+}
+function showOnceTasks(chatId, type, isUpdate=false){
 
   let taskToRemid = getChatTasks(chatId, type);
     
-  let mes = title+"\n\n";
+  let mes = typesTitle[type]+"\n\n";
   let keyboard = {
     inline_keyboard: [[]] }
   let k = 0;
@@ -22,8 +58,16 @@ function showOnceTasks(chatId, type, title){
       keyboard.inline_keyboard.push([]);
     }
   }
+  keyboard.inline_keyboard.push([{text: "🔄", callback_data: "update="+type}])
 
-  botSendMessage(chatId,mes,keyboard);
+  if(isUpdate){
+    if(mes.trim() == text.trim()) return;
+    botEditMessage(chatId,message_id,mes,keyboard);
+
+  }
+  else{
+    botSendMessage(chatId,mes,keyboard);
+  }
 
 }
 
@@ -165,7 +209,7 @@ function onceTaskRemider(){
 function getChatTasks(chatId, type){
   let tasks = tChat.use(chatId).getRange(tChat.allRange).getValues();
   let taskToRemid = [];
-  for (let i = 0; i < tasks.length; i++) {
+  for (let i = 1; i < tasks.length; i++) {
     if(tasks[i][tChat.getCol(tChat.id_Title)] == "") break;
     let timeOptions;
     try {
@@ -174,7 +218,7 @@ function getChatTasks(chatId, type){
       continue;
     }
     if(type != "all" && timeOptions.type != type) continue;
-    taskToRemid.push({id: tasks[i][tChat.getCol(tChat.id_Title)], title: tasks[i][tChat.getCol(tChat.name_Title)]});
+    taskToRemid.push({id: tasks[i][tChat.getCol(tChat.id_Title)], title: tasks[i][tChat.getCol(tChat.name_Title)],options: JSON.parse(tasks[i][tChat.getCol(tChat.options_Title)])});
   }
   return taskToRemid;
 }

@@ -10,58 +10,29 @@ function buttonsUseCases(data){
   if(String(data).startsWith("done ")){
     let nomer = data.split(" ")[1];
     let task_id = data.split(" ")[2];
-    let tasks = tChat.use(chat_id).getRange(tChat.allRange).getValues();
-    let row = findRowIn2dRangeString(tasks, tChat.getCol(tChat.id_Title), task_id);
-    // if(status != "готово"){
-      tDoneChat.use(chat_id+"_done").insertRowBefore(2);
-      let values = [message_id,task_id,tasks[row][tChat.getCol(tChat.name_Title)], nick ? nick : name, new Date()];
-      tDoneChat.use(chat_id+"_done").getRange(2,1,1,values.length).setValues([values]);
-      botEditMessage(chat_id,message_id,text.replace("\n"+nomer+". ","\n"+nomer+". (✅) "),reply_markup);
-    // }
-    // else{
-    //   // tChat.use(chat_id+"_done").getRange(row+1,tChat.getCol(tChat.status_Title)+1,1,2).setValues([["", ""]]);
-    //   botEditMessage(chat_id,message_id,text.replace("\n"+nomer+". (✅) ","\n"+nomer+". "),reply_markup);
-    // }
-
-
+    doneTask(nomer, task_id);
   }
+
   else if(String(data).startsWith("settings ")){
     let nomer = data.split(" ")[1];
     let task_id = data.split(" ")[2];
-    let tasks = tChat.use(chat_id).getRange(tChat.allRange).getValues();
-    let row = findRowIn2dRangeString(tasks, tChat.getCol(tChat.id_Title), task_id);
-    // if(status != "готово"){
-    let mes = "<b>Задача</b>\n"+tasks[row][tChat.getCol(tChat.name_Title)];
-    let options = JSON.parse(tasks[row][tChat.getCol(tChat.options_Title)]);
-    mes += "\n\n<b>Настройки уведомлений</b>\nДата начала: " + options.fromDate;
-    mes += "\nВремя: " + options.time;
-    mes += "\nТип: " + types[options.type];
-    if(options.repeatDays) mes += "\nДни: " + options.repeatDays;
-    let settingsKeyboard = {
-      inline_keyboard: [
-        [{text: "Редактировать", callback_data: "edit"},
-        {text: "Архивировать", callback_data: "archive"}],
-      ]
-    };
-    botSendMessage(chat_id,mes,settingsKeyboard);
-    
-
-    // }
-    // else{
-    //   // tChat.use(chat_id+"_done").getRange(row+1,tChat.getCol(tChat.status_Title)+1,1,2).setValues([["", ""]]);
-    //   botEditMessage(chat_id,message_id,text.replace("\n"+nomer+". (✅) ","\n"+nomer+". "),reply_markup);
-    // }
-
-
+    taskSettingsView(task_id);
   }
-  // else if(String(data).startsWith("undone ")){
-  //   let nomer = data.split(" ")[1];
-  //   let task_id = data.split(" ")[2];
-  //   let tasks = tChat.use(chatId).getRange(tChat.allRange).getValues();
-  //   let row = findRowIn2dRangeString(tasks, tChat.getCol(tChat.id_Title), task_id);
-  //   tChat.use(chatId).getRange(row+1,tChat.getCol(tChat.status_Title),1,2).setValues([["", ""]]);
-  //   botEditMessage(chat_id,message_id,text.replace("\n"+nomer+". (✅) ","\n"+nomer+". "),reply_markup);
-  // }
+
+  else if(String(data).startsWith("back=")){
+    botDeleteMessage(chat_id, message_id);
+  }
+  
+
+  else if(String(data).startsWith("update=")){
+    showAllTasks(chat_id,true);
+  }
+
+  else if(String(data).startsWith("archive=")){
+    lettask_id = data.split("=")[1];
+    archiveTask(task_id);
+  }
+
 
   else if(data == "oldproject"){
     botDeleteMessage(chat_id,message_id);

@@ -14,18 +14,19 @@ function newTask(){
   mes += "\nВремя: " + options.time;
   mes += "\nТип: " + types[options.type];
   if(options.repeatDays) mes += "\nДни: " + options.repeatDays;
-  let settingsKeyboard = {
-    inline_keyboard: [
-      [{text: "Редактировать", callback_data: "edit"},
-      {text: "Архивировать", callback_data: "archive"}],
-    ]
-  };
-  botSendMessage(chat_id,mes,settingsKeyboard);
+  // let settingsKeyboard = {
+  //   inline_keyboard: [
+  //     [
+  //       // {text: "Редактировать", callback_data: "edit"},
+  //     {text: "Удалить", callback_data: "archive=task_id"}],
+  //   ]
+  // };
+  botSendMessage(chat_id,mes);
 }
 let types = {
   once: "Разовая",
-  weekly: "Еженедельная",
-  daily: "Ежедневная",
+  weekly: "Повторяющаяся",
+  daily: "Повторяющаяся",
 }
 
 function parseDateTimeOptions(optionsRaw){
@@ -42,23 +43,29 @@ function parseDateTimeOptions(optionsRaw){
     }
     else{
       let dateAndTime = optionsByLines[0].split(" ");
-      if(/^\d{2}.\d{2}.\d{4}$/.test(dateAndTime[0])) parameters.fromDate = dateAndTime[0];
       if (dateAndTime.length > 1){
         if(/^\d{2}:\d{2}$/.test(dateAndTime[1])) parameters.time = dateAndTime[1];
+      }
+      else{
+        if(/^\d{2}:\d{2}$/.test(dateAndTime[0])) parameters.time = dateAndTime[0];
+        else if(/^\d{2}.\d{2}.\d{4}$/.test(dateAndTime[0])) parameters.fromDate = dateAndTime[0];
       }
     }
 
 
     if(optionsByLines.length > 1){
-      let repeatDays = checkRepeatDays(optionsByLines[1]);
+      repeatDays = checkRepeatDays(optionsByLines[1]);
       if(repeatDays){
         parameters.repeatDays = repeatDays;
       }
       else{
-        let dateAndTime = optionsByLines[1].split(" ");
-        if(/^\d{2}.\d{2}.\d{4}$/.test(dateAndTime[0])) parameters.fromDate = dateAndTime[0];
+        dateAndTime = optionsByLines[1].split(" ");
         if (dateAndTime.length > 1){
           if(/^\d{2}:\d{2}$/.test(dateAndTime[1])) parameters.time = dateAndTime[1];
+        }
+        else{
+          if(/^\d{2}:\d{2}$/.test(dateAndTime[0])) parameters.time = dateAndTime[0];
+          else if(/^\d{2}.\d{2}.\d{4}$/.test(dateAndTime[0])) parameters.fromDate = dateAndTime[0];
         }
       }
     }
@@ -74,8 +81,9 @@ function parseDateTimeOptions(optionsRaw){
   // если задача вида "/+ задача" - то она ежедневная
   else{
     parameters.fromDate = stringDateV2(new Date(), true);
-    parameters.type = "daily";
-    parameters.time = "10:00";
+    parameters.type = "weekly";
+    parameters.time = "12:00";
+    parameters.repeatDays = "пн вт ср чт пт сб вс";
   }
 
   
