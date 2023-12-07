@@ -7,6 +7,7 @@ function taskSettingsView(task_id){
     showAllTasks(chat_id,true);
     return;
   };
+  let options = JSON.parse(tasks[row][tChat.getCol(tChat.options_Title)]);
   let mes = "<b>Задача</b>\n"+tasks[row][tChat.getCol(tChat.name_Title)];
   mes += "\n\n<b>Настройки уведомлений</b>\nДата начала: " + options.fromDate;
   mes += "\nВремя: " + options.time;
@@ -28,11 +29,12 @@ function taskSettingsView(task_id){
 function archiveTask(task_id){
   let tasks = tChat.use(chat_id).getRange(tChat.allRange).getValues();
   let row = findRowIn2dRangeString(tasks, tChat.getCol(tChat.id_Title), task_id);
+  let table_row = row + 2;
   if(row == -1) {
     botDeleteMessage(chat_id,message_id);
     return;
   };
-  tChat.use(chat_id).deleteRow(row+1);
+  tChat.use(chat_id).deleteRow(table_row);
   botDeleteMessage(chat_id,message_id);
 
 }

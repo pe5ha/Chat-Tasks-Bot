@@ -2,7 +2,7 @@ let tChat = {
   id_Title: "id задачи",
   name_Title: "задача",
   options_Title: "опции",
-  allRange: "A:C",
+  allRange: "A2:C",
   ids_Range: "A:A",
   getColumnsOrder(){
     return [
@@ -35,7 +35,7 @@ let tDoneChat = {
   name_Title: "задача",
   who_Title: "кто выполнил",
   date_Title: "дата выполнения",
-  allRange: "A:D",
+  allRange: "A2:D",
   ids_Range: "A:A",
   getColumnsOrder(){
     return [

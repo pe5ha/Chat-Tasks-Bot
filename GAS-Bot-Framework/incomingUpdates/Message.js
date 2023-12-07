@@ -33,3 +33,31 @@ function messageReceived(message) {
     groupChatMessage();
   }
 }
+
+
+function myChatMember(chatMemberUpdated){
+  chat_id = chatMemberUpdated.chat.id;
+  user_id = chatMemberUpdated.from.id;
+  name = chatMemberUpdated.from.first_name + (chatMemberUpdated.from.last_name ? " " + chatMemberUpdated.from.last_name : "");
+  nick = (chatMemberUpdated.from.username ? "@" + chatMemberUpdated.from.username : "");
+  language_code = chatMemberUpdated.from.language_code;
+  date = chatMemberUpdated.date;
+  if(chatMemberUpdated.chat.title) chat_title = chatMemberUpdated.chat.title;
+  
+
+  // if(chatMemberUpdated.new_chat_member){
+  //   if(chatMemberUpdated.new_chat_member.status != "left"){
+  //     new_chat_member = chatMemberUpdated.new_chat_member.user;
+  //   }
+  // } 
+
+  // initial user checking
+  userRegister(user_id);
+
+  if (chat_id == user_id) { // сообщения в лс
+    directMessage();
+  }
+  else { // сообщения в групповых чатах (и каналах ?)
+    groupChatMessage();
+  }
+}

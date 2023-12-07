@@ -24,7 +24,7 @@ function buttonsUseCases(data){
   }
   
 
-  else if(String(data).startsWith("update=")){
+  else if(String(data) == "update"){
     showAllTasks(chat_id,true);
   }
 

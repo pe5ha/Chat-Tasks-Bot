@@ -47,6 +47,10 @@ function entryPoint(e){
     messageReceived(contents.message);
   }
 
+  else if (contents.my_chat_member != null) {
+    myChatMember(contents.my_chat_member);
+  }
+
   else if (contents.callback_query != null) {
     callbackQueryReceived(contents.callback_query);
   }
