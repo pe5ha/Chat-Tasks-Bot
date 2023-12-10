@@ -18,7 +18,6 @@ function messageReceived(message) {
   else if(message.voice) text = message.caption;
   if(!text) text = "";
 
-  if(message.new_chat_member) new_chat_member = message.new_chat_member;
 
 
   logUpdate("Сообщение: ",text);
@@ -45,11 +44,11 @@ function myChatMember(chatMemberUpdated){
   if(chatMemberUpdated.chat.title) chat_title = chatMemberUpdated.chat.title;
   
 
-  // if(chatMemberUpdated.new_chat_member){
-  //   if(chatMemberUpdated.new_chat_member.status != "left"){
-  //     new_chat_member = chatMemberUpdated.new_chat_member.user;
-  //   }
-  // } 
+  if(chatMemberUpdated.new_chat_member){
+    if(chatMemberUpdated.new_chat_member.status == "member"){
+      new_chat_member = chatMemberUpdated.new_chat_member.user;
+    }
+  } 
 
   // initial user checking
   userRegister(user_id);

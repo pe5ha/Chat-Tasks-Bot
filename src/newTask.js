@@ -1,8 +1,8 @@
 function newTask(){
   let task_id = message_id;
-  let task = String(text).replace("/+","").split("\n",2)[0].trim();
+  let task = String(text).replace("/+","").split("/?")[0].trim();
   let optionsRaw = "";
-  if(text.indexOf("\n") != -1) optionsRaw = String(text).substring(text.indexOf("\n")+1);
+  if(text.indexOf("/?") != -1) optionsRaw = String(text).substring(text.indexOf("/?"));
   let options = parseDateTimeOptions(optionsRaw);
   tChat.use(chat_id).insertRowBefore(2);
   tChat.use(chat_id).getRange(2,tChat.getCol(tChat.id_Title)+1,1,3).setValues([[task_id, task, JSON.stringify(options, null, 5)]]); 
@@ -31,44 +31,25 @@ let types = {
 
 function parseDateTimeOptions(optionsRaw){
   let parameters = {};
-
+  optionsRaw = String(optionsRaw).replace("/? ","");
+  optionsRaw = String(optionsRaw).replace("/? ","");
+  optionsRaw = String(optionsRaw).replace("/?","");
+  optionsRaw = String(optionsRaw).replace("/?","");
+  
 
   if(optionsRaw){
     let optionsByLines = String(optionsRaw).split("\n");
 
 
-    let repeatDays = checkRepeatDays(optionsByLines[0]);
-    if(repeatDays){
-      parameters.repeatDays = repeatDays;
+    parameters.repeatDays = checkRepeatDays(optionsByLines[0]);
+    if(parameters.repeatDays){
+      if(optionsByLines.length > 1) checkDateAndTime(parameters,optionsByLines[1]);
     }
     else{
-      let dateAndTime = optionsByLines[0].split(" ");
-      if (dateAndTime.length > 1){
-        if(/^\d{2}:\d{2}$/.test(dateAndTime[1])) parameters.time = dateAndTime[1];
-      }
-      else{
-        if(/^\d{2}:\d{2}$/.test(dateAndTime[0])) parameters.time = dateAndTime[0];
-        else if(/^\d{2}.\d{2}.\d{4}$/.test(dateAndTime[0])) parameters.fromDate = dateAndTime[0];
-      }
+      checkDateAndTime(parameters,optionsByLines[0]);
+      if(optionsByLines.length > 1)  parameters.repeatDays = checkRepeatDays(optionsByLines[1]);
     }
 
-
-    if(optionsByLines.length > 1){
-      repeatDays = checkRepeatDays(optionsByLines[1]);
-      if(repeatDays){
-        parameters.repeatDays = repeatDays;
-      }
-      else{
-        dateAndTime = optionsByLines[1].split(" ");
-        if (dateAndTime.length > 1){
-          if(/^\d{2}:\d{2}$/.test(dateAndTime[1])) parameters.time = dateAndTime[1];
-        }
-        else{
-          if(/^\d{2}:\d{2}$/.test(dateAndTime[0])) parameters.time = dateAndTime[0];
-          else if(/^\d{2}.\d{2}.\d{4}$/.test(dateAndTime[0])) parameters.fromDate = dateAndTime[0];
-        }
-      }
-    }
     if(parameters.repeatDays) parameters.type = "weekly";
     else parameters.type = "once";
     if(!parameters.fromDate){
@@ -90,6 +71,20 @@ function parseDateTimeOptions(optionsRaw){
   return parameters;
 }
 
+function checkDateAndTime(parameters, dateTimeString){
+  let dateAndTime = dateTimeString.split(" ");
+  if (dateAndTime.length == 1){
+    if(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(dateAndTime[0])) parameters.time = dateAndTime[0];
+    else if(/^\d{2}.\d{2}.\d{4}$/.test(dateAndTime[0])) parameters.fromDate = dateAndTime[0];
+  }
+  else if (dateAndTime.length > 1){
+    if(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(dateAndTime[1])) parameters.time = dateAndTime[1];
+    if(/^\d{2}.\d{2}.\d{4}$/.test(dateAndTime[0])) parameters.fromDate = dateAndTime[0];
+
+    if(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(dateAndTime[0])) parameters.time = dateAndTime[0];
+    if(/^\d{2}.\d{2}.\d{4}$/.test(dateAndTime[1])) parameters.fromDate = dateAndTime[1];
+  }
+}
 
 function checkRepeatDays(daysString){
   

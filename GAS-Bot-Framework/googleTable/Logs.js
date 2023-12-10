@@ -47,10 +47,11 @@ function logDebug(e){
       tDebug.deleteRows(5,990);
     } catch (error) {}
   }
+  tDebug.insertRowBefore(1);
   tDebug.getRange(1, 3).setValue(JSON.stringify(e, null, 5));
   try {
     let contents = JSON.parse(e.postData.contents);
-    tDebug.getRange(1, 1).setValue(JSON.stringify(contents, null, 5));
+    tDebug.getRange(1, 1, 1, 2).setValues([[JSON.stringify(contents, null, 5),stringDate()]]);
   } catch (error) {
   }
 }
