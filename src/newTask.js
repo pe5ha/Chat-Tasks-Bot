@@ -1,11 +1,12 @@
 function newTask(){
   let task_id = message_id;
-  let task = String(text).replace("/+","").split("/?")[0].trim();
+  let task = String(text).replace("/+","").split("\n")[0].trim();
+  let taskWithMention = task.replace(/@=/g,"@");
   let optionsRaw = "";
-  if(text.indexOf("/?") != -1) optionsRaw = String(text).substring(text.indexOf("/?"));
+  if(text.indexOf("\n") != -1) optionsRaw = String(text).substring(text.indexOf("\n")+1);
   let options = parseDateTimeOptions(optionsRaw);
   tChat.use(chat_id).insertRowBefore(2);
-  tChat.use(chat_id).getRange(2,tChat.getCol(tChat.id_Title)+1,1,3).setValues([[task_id, task, JSON.stringify(options, null, 5)]]); 
+  tChat.use(chat_id).getRange(2,tChat.getCol(tChat.id_Title)+1,1,3).setValues([[task_id, taskWithMention, JSON.stringify(options, null, 5)]]); 
   
   createTriggerForRemider(chat_id,task_id,options);
 
@@ -31,10 +32,6 @@ let types = {
 
 function parseDateTimeOptions(optionsRaw){
   let parameters = {};
-  optionsRaw = String(optionsRaw).replace("/? ","");
-  optionsRaw = String(optionsRaw).replace("/? ","");
-  optionsRaw = String(optionsRaw).replace("/?","");
-  optionsRaw = String(optionsRaw).replace("/?","");
   
 
   if(optionsRaw){

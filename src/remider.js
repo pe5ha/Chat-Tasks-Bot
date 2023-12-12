@@ -145,7 +145,7 @@ function dailyTaskRemider(){
         keyboard.inline_keyboard.push([]);
       }
     }
-    if(taskToRemid.length == 0) return;
+    if(taskToRemid.length == 0) continue;
 
     botSendMessage(chatId,mes,keyboard);
 
@@ -174,7 +174,7 @@ function weeklyTaskRemider(){
         keyboard.inline_keyboard.push([]);
       }
     }
-    if(taskToRemid.length == 0) return;
+    if(taskToRemid.length == 0) continue;
 
     botSendMessage(chatId,mes,keyboard);
 
@@ -255,7 +255,7 @@ function remidInChat(chatId, type){
       taskTime.setHours(parseInt(time.split(":")[0]));
       taskTime.setMinutes(parseInt(time.split(":")[1]));
       let diff = Math.abs(taskTime.getTime() - nowTime.getTime());
-      if(diff > 60 * 20 * 1000) continue;
+      if(diff >  15 * 60 * 1000) continue; // для триггера раз в 30 мин (15 мин слева и справа)
     }
     taskToRemid.push({id: tasks[i][tChat.getCol(tChat.id_Title)], title: tasks[i][tChat.getCol(tChat.name_Title)]});
     // TODO: каждые N дней / каждые N недель по х дням / каждый первый Y день месяца 
